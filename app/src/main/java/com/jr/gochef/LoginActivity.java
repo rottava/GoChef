@@ -6,9 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
@@ -21,12 +23,16 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.security.acl.AclEntry;
+import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private String email;
+    private String dataLog;
     private Integer G_SIGN_IN = 9001;
 
     private LoginButton buttonFacebook;
@@ -40,36 +46,40 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        callbackManager = CallbackManager.Factory.create();
-
+        //Facebook Login
         buttonFacebook = findViewById(R.id.button_login_facebook);
-        buttonFacebook.setReadPermissions("email");
+        buttonFacebook.setReadPermissions(Arrays.asList("public_profile", "email"));
         // Callback registration
-        buttonFacebook.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        LoginManager.getInstance().registerCallback(callbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject me, GraphResponse response) {
                                 if (response.getError() != null) {
+                                    Log.w(TAG, "Get session data " + response.getRawResponse());
                                 } else {
-                                    email = me.optString("email");
+                                    Log.i(TAG, "Facebook signIn Result: successfully");
+                                    loginFacebook();
                                 }
                             }
                         }).executeAsync();
-            }
+                    }
 
-            @Override
-            public void onCancel() {
-            }
+                    @Override
+                    public void onCancel() {
+                        Log.i(TAG, "Facebook signIn Result: Canceled");
+                    }
 
-            @Override
-            public void onError(FacebookException e) {
-                Log.w(TAG, "Facebook signIn Result: " + e.getMessage());
-            }
-        });
-
+                    @Override
+                    public void onError(FacebookException e) {
+                        Log.w(TAG, "Facebook signIn Result: " + e.getMessage());
+                    }
+                });
+        //Google Login
         buttonGoogle = findViewById(R.id.button_login_google);
         buttonGoogle.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -82,15 +92,23 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(AccessToken.isCurrentAccessTokenActive()) {
+            loginFacebook();
+        } else {
+            LoginManager.getInstance().logOut();
+        }
+    }
+
     private void signIn() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, G_SIGN_IN);
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        callbackManager.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
@@ -101,30 +119,32 @@ public class LoginActivity extends AppCompatActivity {
             handleSignInResult(task);
         }
         else {
-            if(email != null){
-                sucess();
-            }
+            callbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Signed in successfully, show authenticated UI.
-            updateUI(account);
+            Log.i(TAG, "Google signIn Result: successfully");
+            loginGoogle(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG,"Google signIn result: failed code=" + e.getStatusCode());
-            updateUI(null);
+            loginGoogle(null);
         }
     }
 
-    private void updateUI(GoogleSignInAccount googleUser){
+    private void loginGoogle(GoogleSignInAccount googleUser){
         if(googleUser != null){
-            email = googleUser.getEmail();
-            sucess();
+            Intent intent = new Intent(getBaseContext(), MainActivity.class);
+            String dataLog = "G" + googleUser.getId();
+            intent.putExtra("datalog", dataLog);
+            startActivity(intent);
+            finish();
+
         }
         else {
             ///TODO
@@ -132,9 +152,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void sucess(){
+    private void loginFacebook(){
         Intent intent = new Intent(getBaseContext(), MainActivity.class);
-        intent.putExtra("email", email);
+        String dataLog = "F" + AccessToken.getCurrentAccessToken().getUserId();
+        intent.putExtra("datalog", dataLog);
         startActivity(intent);
         finish();
     }
