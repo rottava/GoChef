@@ -1,6 +1,13 @@
 <resources>
-    <string name="app_name">GoChef</string>
+    <string name="app_name">GoGoChef</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="login_facebook">Login Facebook</string>
+    <string name="login_google">Login Google</string>
+    <string name="login_text">Loren ipsum dolor sit amet, consectetur adipiscing elit.\nAebeab at augue diam. Fusce ut ex at urna fringilla blandit.</string>
+    <string name="login_logo_description">Logo login activity</string>
+    <string name="login_null_text">Logo login activity</string>
+    <string name="facebook_app_id">1297226603776561</string> <string name="fb_login_protocol_scheme">fb1297226603776561</string>
+
 </resources>
