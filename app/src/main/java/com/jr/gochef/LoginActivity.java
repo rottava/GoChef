@@ -19,8 +19,10 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.Task;
 
 import org.json.JSONException;
@@ -50,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
         buttonFacebook = findViewById(R.id.button_login_facebook);
         buttonFacebook.setReadPermissions(Arrays.asList("public_profile", "email"));
         // Callback registration
-        FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -90,17 +91,39 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if(AccessToken.isCurrentAccessTokenActive()) {
-            loginFacebook();
+        if(AccessToken.getCurrentAccessToken() != null){
+            if(AccessToken.isCurrentAccessTokenActive()) {
+                loginFacebook();
+            } else {
+                LoginManager.getInstance().logOut();
+            }
         } else {
-            LoginManager.getInstance().logOut();
+            GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+            if(account != null){
+                googleSignInClient.silentSignIn();
+            }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(AccessToken.isCurrentAccessTokenActive()) {
+            LoginManager.getInstance().logOut();
+        } else {
+            googleSignInClient.signOut();
+        }
+    }
+
 
     private void signIn() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
@@ -128,28 +151,23 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             // Signed in successfully, show authenticated UI.
             Log.i(TAG, "Google signIn Result: successfully");
-            loginGoogle(account);
+            if(account != null){
+                loginGoogle(account);
+            }
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG,"Google signIn result: failed code=" + e.getStatusCode());
-            loginGoogle(null);
+            //loginGoogle(null);
         }
     }
 
     private void loginGoogle(GoogleSignInAccount googleUser){
-        if(googleUser != null){
-            Intent intent = new Intent(getBaseContext(), MainActivity.class);
-            String dataLog = "G" + googleUser.getId();
-            intent.putExtra("datalog", dataLog);
-            startActivity(intent);
-            finish();
-
-        }
-        else {
-            ///TODO
-        }
-
+        Intent intent = new Intent(getBaseContext(), MainActivity.class);
+        String dataLog = "G" + googleUser.getId();
+        intent.putExtra("datalog", dataLog);
+        startActivity(intent);
+        finish();
     }
 
     private void loginFacebook(){
