@@ -1,5 +1,7 @@
 package com.jr.gochef;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,17 +16,28 @@ import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.util.ArrayUtils;
+
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemClickListener {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+public class RecipeFragment extends Fragment{
 
     private ImageView topView;
     private TextView topName;
-    private TextView topTipe;
+    private TextView topType;
     private TextView searchText;
     private ScrollView mScrollView;
     private SearchView mSearchView;
     private RecycleListAdapter adapter;
+    private RecyclerView mRecyclerView;
+    private ArrayList<Recipe> recipes;
+    private String firstRecipe = "meat";
 
     public RecipeFragment() {
     }
@@ -39,6 +52,7 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_recipe, container, false);
+        mRecyclerView = mView.findViewById(R.id.listaReceita);
         topView = mView.findViewById(R.id.topImageView);
         topView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -48,7 +62,7 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
             }
         });
         topName = mView.findViewById(R.id.topRecipeName);
-        topTipe = mView.findViewById(R.id.topRecipeType);
+        topType = mView.findViewById(R.id.topRecipeType);
         mSearchView = mView.findViewById(R.id.searchView);
         searchText = mView.findViewById(R.id.searchViewText);
         searchText.setOnClickListener(new View.OnClickListener() {
@@ -58,11 +72,63 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
             }
         });
 
+        fillRecipes();
+
+        if(recipes == null || recipes.size() == 0){
+            fillRecipesTest();
+        }
+
+        topName.setText(recipes.get(0).getRecipeName());
+        topType.setText(recipes.get(0).getAttributes());
+
+        try{
+            URL url = new URL(recipes.get(0).getImageUrl());
+            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            topView.setImageBitmap(bmp);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ((MainActivity)getActivity()).setRecipeItem(recipes.get(0));
+        recipes.remove(recipes.get(0));
+
+        return mView;
+    }
+
+    private void fillRecipes(){
+        final YummlyService yummlyService = new YummlyService();
+        yummlyService.findRecipes(firstRecipe, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+            }
+            @Override
+            public void onResponse(Call call, Response response)  {
+                recipes = yummlyService.processResults(response);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+                        mRecyclerView.setLayoutManager(layoutManager);
+                        mRecyclerView.setHasFixedSize(true);
+                        adapter = new RecycleListAdapter(getContext(), recipes);
+                        mRecyclerView.setAdapter(adapter);
+                    }
+                });
+            }
+        });
+    }
+
+
+    //
+    private void fillRecipesTest(){
         //RecycleViewFiller
-        ArrayList<RecycleListItem> recipes = new ArrayList<>();
-        RecycleListItem recipe = new RecycleListItem();
-        recipe.setImage(Color.BLUE);
-        recipe.setName("Boiled Water");
+        recipes = new ArrayList<>();
+        Recipe recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.BLUE));
+        recipe.setRecipeName("Boiled Water");
+        recipe.setAttributes("Water");
         ArrayList<String> ingredients = new ArrayList<>();
         ingredients.add("Water");
         ingredients.add("Water");
@@ -78,53 +144,29 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
         steps.add("Boil the water");
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.YELLOW);
-        recipe.setName("Awesome Barbecue");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.YELLOW));
+        recipe.setRecipeName("Awesome Barbecue");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.MAGENTA);
-        recipe.setName("Dry Camel and gin");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.MAGENTA));
+        recipe.setRecipeName("Dry Camel and gin");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.RED);
-        recipe.setName("German Black Sheep n®12");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.RED));
+        recipe.setRecipeName("German Black Sheep n®12");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.BLACK);
-        recipe.setName("Roasted Goat w/ Honey n' pepper");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.BLACK));
+        recipe.setRecipeName("Roasted Goat w/ Honey n' pepper");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-
-        topName.setText(recipes.get(0).getName());
-        //topTipe.setText(recipes.get(0).getName());
-        topView.setBackgroundColor(recipes.get(0).getImage());
-        ((MainActivity)getActivity()).setRecycleListItem(recipes.get(0));
-        recipes.remove(recipes.get(0));
-
-        // set up the RecyclerView
-        RecyclerView recyclerView = mView.findViewById(R.id.listaReceita);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-        adapter = new RecycleListAdapter(getContext(), recipes);
-        adapter.setOnItemClickListener(this);
-        recyclerView.setAdapter(adapter);
-
-        return mView;
-    }
-
-    @Override
-    public void onItemClick(View view, int position, RecycleListItem recycleListItem) {
-        ((MainActivity)getActivity()).showButton();
-        ((MainActivity)getActivity()).setLastItem(position);
-        ((MainActivity)getActivity()).setRecycleListItem(recycleListItem);
-        ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
-    }
+    }//
 }

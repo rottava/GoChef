@@ -1,5 +1,8 @@
 package com.jr.gochef;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,9 +24,15 @@ import com.facebook.AccessToken;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
-public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClickListener {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
+public class ExpFragment extends Fragment {
 
     private TextView expType;
     private TextView expName;
@@ -35,7 +44,9 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
     private ImageView expFav;
     private ScrollView mScrollView;
     private RecycleListAdapter adapter;
-    private RecycleListItem recycleListItem;
+    RecyclerView mRecyclerView;
+    private ArrayList<Recipe> recipes;
+    private Recipe mRecipe;
     private int fav;
 
     public ExpFragment() {
@@ -51,6 +62,7 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_exp, container, false);
+        mRecyclerView = mView.findViewById(R.id.expListMore);
         expType = mView.findViewById(R.id.expRecipeType);
         expName = mView.findViewById(R.id.expRecipeName);
         expIngredients = mView.findViewById(R.id.expIngredientsList);
@@ -87,27 +99,75 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
             ///TODO
         });
 
-        recycleListItem = ((MainActivity)getActivity()).getRecycleListItem();
-        expName.setText(recycleListItem.getName());
-        expBigImage.setBackgroundColor(recycleListItem.getImage());
+        mRecipe = ((MainActivity)getActivity()).getRecipeItem();
+        expName.setText(mRecipe.getRecipeName());
+        expType.setText(mRecipe.getAttributes());
+
+        try{
+            URL url = new URL(mRecipe.getImageUrl());
+            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            expBigImage.setImageBitmap(bmp);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
         String text="\n";
-        for(String elemento: recycleListItem.getIngredients()){
+        for(String elemento: mRecipe.getIngredients()){
             text = text + "• " + elemento + "\n";
         }
         expIngredients.setText(text);
+
         text="\n";
         int n=1;
-        for(String elemento: recycleListItem.getSteps()){
+        for(String elemento: mRecipe.getIngredients()
+        ){
             text = text + n +") " + elemento + "\n";
             n++;
         }
         expSteps.setText(text);
 
+        fillRecipes();
+        if(recipes == null || recipes.size() == 0){
+            fillRecipesTest();
+        }
+
+        return mView;
+
+    }
+
+    private void fillRecipes(){
+        final YummlyService yummlyService = new YummlyService();
+        yummlyService.findRecipes(mRecipe.getSource(), new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+            @Override
+            public void onResponse(Call call, Response response)  {
+                recipes = yummlyService.processResults(response);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+                        mRecyclerView.setLayoutManager(layoutManager);
+                        mRecyclerView.setHasFixedSize(true);
+                        adapter = new RecycleListAdapter(getContext(), recipes);
+                        mRecyclerView.setAdapter(adapter);
+                    }
+                });
+            }
+        });
+    }
+
+
+    //
+    private void fillRecipesTest(){
         //RecycleViewFiller
-        ArrayList<RecycleListItem> recipes = new ArrayList<>();
-        RecycleListItem recipe = new RecycleListItem();
-        recipe.setImage(Color.BLUE);
-        recipe.setName("Boiled Water");
+        recipes = new ArrayList<>();
+        Recipe recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.BLUE));
+        recipe.setRecipeName("Boiled Water");
         ArrayList<String> ingredients = new ArrayList<>();
         ingredients.add("Water");
         ingredients.add("Water");
@@ -123,47 +183,30 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
         steps.add("Boil the water");
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.YELLOW);
-        recipe.setName("Awesome Barbecue");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.YELLOW));
+        recipe.setRecipeName("Awesome Barbecue");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.MAGENTA);
-        recipe.setName("Dry Camel and gin");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.MAGENTA));
+        recipe.setRecipeName("Dry Camel and gin");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.RED);
-        recipe.setName("German Black Sheep n®12");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.RED));
+        recipe.setRecipeName("German Black Sheep n®12");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-        recipe = new RecycleListItem();
-        recipe.setImage(Color.BLACK);
-        recipe.setName("Roasted Goat w/ Honey n' pepper");
+        recipe = new Recipe();
+        recipe.setImageUrl(Integer.toString(Color.BLACK));
+        recipe.setRecipeName("Roasted Goat w/ Honey n' pepper");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
-
-        // set up the RecyclerView
-        RecyclerView recyclerView = mView.findViewById(R.id.expListMore);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-        adapter = new RecycleListAdapter(getContext(), recipes);
-        adapter.setOnItemClickListener(this);
-        recyclerView.setAdapter(adapter);
-
-        return mView;
-    }
-
-    @Override
-    public void onItemClick(View view, int position, RecycleListItem recycleListItem) {
-        ((MainActivity)getActivity()).setLastItem(position);
-        ((MainActivity)getActivity()).setRecycleListItem(recycleListItem);
-        ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
-    }
+    }//
 
 }

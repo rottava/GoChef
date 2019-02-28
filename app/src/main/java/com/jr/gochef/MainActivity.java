@@ -14,14 +14,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static int state = 0;
     private static int lastItem = 0;
-    private static RecycleListItem recycleListItem;
+    private static Recipe mRecipe;
     private Button mButton;
     private String url = "http://www.google.com";
 
@@ -116,12 +114,13 @@ public class MainActivity extends AppCompatActivity {
         lastItem = item;
     }
 
-    public RecycleListItem getRecycleListItem() {
-        return recycleListItem;
+    public Recipe getRecipeItem() {
+        return mRecipe;
     }
 
-    public void setRecycleListItem(RecycleListItem recycleListItem) {
-        this.recycleListItem = recycleListItem;
+    public void setRecipeItem(Recipe mRecipe) {
+        this.mRecipe = mRecipe;
+        url = mRecipe.imageUrl;
     }
 
     public void showButton(){

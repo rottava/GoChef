@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
         if(AccessToken.isCurrentAccessTokenActive()) {
             LoginManager.getInstance().logOut();
         } else {
-            googleSignInClient.signOut();
+            //googleSignInClient.signOut();
         }
     }
 
