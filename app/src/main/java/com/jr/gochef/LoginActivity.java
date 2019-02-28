@@ -10,7 +10,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
@@ -22,19 +21,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.acl.AclEntry;
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private String dataLog;
     private Integer G_SIGN_IN = 9001;
 
     private LoginButton buttonFacebook;
@@ -109,7 +105,12 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
             if(account != null){
-                googleSignInClient.silentSignIn();
+                googleSignInClient.silentSignIn().addOnSuccessListener(new OnSuccessListener<GoogleSignInAccount>() {
+                    @Override
+                    public void onSuccess(GoogleSignInAccount googleSignInAccount) {
+                        loginGoogle(googleSignInAccount);
+                    }
+                });
             }
         }
     }

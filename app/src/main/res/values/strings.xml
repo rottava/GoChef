@@ -1,13 +1,23 @@
 <resources>
+    //APP
     <string name="app_name">GoChef</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="login_facebook">Login Facebook</string>
-    <string name="login_google">Login Google</string>
-    <string name="login_text">Loren ipsum dolor sit amet, consectetur adipiscing elit.\nAebeab at augue diam. Fusce ut ex at urna fringilla blandit.</string>
-    <string name="login_logo_description">Logo login activity</string>
-    <string name="login_null_text">Logo login activity</string>
     <string name="facebook_app_id">1297226603776561</string> <string name="fb_login_protocol_scheme">fb1297226603776561</string>
+    //Login Activity
+    <string name="login_app_text">Loren ipsum dolor sit amet, consectetur adipiscing elit.\nAebeab at augue diam. Fusce ut ex at urna fringilla blandit.</string>
+    <string name="login_logo_description">Logo login activity</string>
+    <string name="login_null_text">O QUE VAI AQUI</string>
+    //Main Activity
+    <string name="main_image_description">Saido do forno</string>
+    <string name="main_search_text">Busca </string>
+    <string name="main_hint_text">Pão de alho...</string>
+    <string name="main_section_text">Tipo da receita</string>
+    <string name="main_name_text">Nome da receita</string>
+    <string name="main_recipe_text">Mais receitas</string>
+    <string name="list_recipe_text">Nome em lista</string>
+    <string name="list_recipe_image">Imagem em lista</string>
+    <string name="nav_home">RECEITAS</string>
+    <string name="nav_fav">FAVORITOS</string>
+    <string name="nav_user">PERFIL</string>
+
 
 </resources>
