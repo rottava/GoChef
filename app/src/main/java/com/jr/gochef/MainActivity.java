@@ -25,11 +25,11 @@ public class MainActivity extends AppCompatActivity {
                     Fragment recipeFragment = new RecipeFragment();
                     replaceFragment(recipeFragment);
                     return true;
-                /*case R.id.navigation_favorite:
-                    Fragment favFragment = new RecipeFragment();
+                case R.id.navigation_fav:
+                    Fragment favFragment = new FavFragment();
                     replaceFragment(favFragment);
                     return true;
-                case R.id.navigation_user:
+                /*case R.id.navigation_user:
                     Fragment userFragment = new RecipeFragment();
                     replaceFragment(userFragment);
                     return true;

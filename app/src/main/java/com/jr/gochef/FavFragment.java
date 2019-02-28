@@ -4,30 +4,24 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ScrollView;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemClickListener {
-
-    private ImageView topView;
-    private TextView topName;
-    private TextView topTipe;
-    private TextView searchText;
+public class FavFragment extends Fragment implements RecycleListAdapter.ItemClickListener {
+    
+    private TextView mTextView;
     private ScrollView mScrollView;
-    private SearchView mSearchView;
     private RecycleListAdapter adapter;
 
-    public RecipeFragment() {
+    public FavFragment() {
     }
 
     @Override
@@ -39,19 +33,9 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
-        View mView = inflater.inflate(R.layout.fragment_recipe, container, false);
-        topView = mView.findViewById(R.id.topImageView);
-        topName = mView.findViewById(R.id.topRecipeName);
-        topTipe = mView.findViewById(R.id.topRecipeType);
-        mSearchView = mView.findViewById(R.id.searchView);
-        searchText = mView.findViewById(R.id.searchViewText);
-        searchText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSearchView.setIconified(false);
-            }
-        });
-        mScrollView =  mView.findViewById(R.id.recipeScrollView);
+        View mView = inflater.inflate(R.layout.fragment_fav, container, false);
+        mTextView = mView.findViewById(R.id.favText);
+        mScrollView =  mView.findViewById(R.id.favScrollView);
         Runnable runnable=new Runnable() {
             @Override
             public void run() {
@@ -68,18 +52,17 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
         viewColors.add(Color.RED);
         viewColors.add(Color.BLACK);
 
-        ArrayList<String> recipeNames = new ArrayList<>();
-        recipeNames.add("Boiled Water");
-        recipeNames.add("Awesome Barbecue");
-        recipeNames.add("Dry Camel and gin");
-        recipeNames.add("German Black Sheep n®12");
-        recipeNames.add("Roasted Goat w/ Honey n' pepper");
+        ArrayList<String> favNames = new ArrayList<>();
+        favNames.add("Boiled Water");
+        favNames.add("Awesome Barbecue");
+        favNames.add("Dry Camel and gin");
+        favNames.add("German Black Sheep n®12");
+        favNames.add("Roasted Goat w/ Honey n' pepper");
 
         // set up the RecyclerView
         RecyclerView recyclerView = mView.findViewById(R.id.listaReceita);
-        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(horizontalLayoutManager);
-        adapter = new RecycleListAdapter(getContext(), viewColors, recipeNames);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        adapter = new RecycleListAdapter(getContext(), viewColors, favNames);
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
 
@@ -90,4 +73,5 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
     public void onItemClick(View view, int position) {
         Toast.makeText(getContext(), "You clicked " + adapter.getItem(position) + " on item position " + position, Toast.LENGTH_SHORT).show();
     }
+
 }

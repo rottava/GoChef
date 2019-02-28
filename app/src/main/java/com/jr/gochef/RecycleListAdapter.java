@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.ViewHolder> {
+public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.ViewHolder> {
 
     private List<Integer> mViewColors;
     private List<String> mRecipes;
@@ -18,7 +18,7 @@ public class RecipeListAdapter extends RecyclerView.Adapter<RecipeListAdapter.Vi
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    RecipeListAdapter(Context context, List<Integer> colors, List<String> recipes) {
+    RecycleListAdapter(Context context, List<Integer> colors, List<String> recipes) {
         this.mInflater = LayoutInflater.from(context);
         this.mViewColors = colors;
         this.mRecipes = recipes;
