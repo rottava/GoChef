@@ -4,7 +4,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -44,6 +42,7 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
         topView = mView.findViewById(R.id.topImageView);
         topView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                ((MainActivity)getActivity()).showButton();
                 ((MainActivity)getActivity()).setLastItem(0);
                 ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
             }
@@ -58,35 +57,63 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
                 mSearchView.setIconified(false);
             }
         });
-        mScrollView =  mView.findViewById(R.id.recipeScrollView);
-        Runnable runnable=new Runnable() {
-            @Override
-            public void run() {
-                mScrollView.fullScroll(ScrollView.FOCUS_UP);
-            }
-        };
-        mScrollView.post(runnable);
 
         //RecycleViewFiller
-        ArrayList<Integer> viewColors = new ArrayList<>();
-        viewColors.add(Color.BLUE);
-        viewColors.add(Color.YELLOW);
-        viewColors.add(Color.MAGENTA);
-        viewColors.add(Color.RED);
-        viewColors.add(Color.BLACK);
+        ArrayList<RecycleListItem> recipes = new ArrayList<>();
+        RecycleListItem recipe = new RecycleListItem();
+        recipe.setImage(Color.BLUE);
+        recipe.setName("Boiled Water");
+        ArrayList<String> ingredients = new ArrayList<>();
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        recipe.setIngredients(ingredients);
+        ArrayList<String> steps = new ArrayList<>();
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.YELLOW);
+        recipe.setName("Awesome Barbecue");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.MAGENTA);
+        recipe.setName("Dry Camel and gin");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.RED);
+        recipe.setName("German Black Sheep n®12");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.BLACK);
+        recipe.setName("Roasted Goat w/ Honey n' pepper");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
 
-        ArrayList<String> recipeNames = new ArrayList<>();
-        recipeNames.add("Boiled Water");
-        recipeNames.add("Awesome Barbecue");
-        recipeNames.add("Dry Camel and gin");
-        recipeNames.add("German Black Sheep n®12");
-        recipeNames.add("Roasted Goat w/ Honey n' pepper");
+        topName.setText(recipes.get(0).getName());
+        //topTipe.setText(recipes.get(0).getName());
+        topView.setBackgroundColor(recipes.get(0).getImage());
+        ((MainActivity)getActivity()).setRecycleListItem(recipes.get(0));
+        recipes.remove(recipes.get(0));
 
         // set up the RecyclerView
         RecyclerView recyclerView = mView.findViewById(R.id.listaReceita);
         LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(horizontalLayoutManager);
-        adapter = new RecycleListAdapter(getContext(), viewColors, recipeNames);
+        adapter = new RecycleListAdapter(getContext(), recipes);
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
 
@@ -94,8 +121,10 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int position, RecycleListItem recycleListItem) {
+        ((MainActivity)getActivity()).showButton();
         ((MainActivity)getActivity()).setLastItem(position);
+        ((MainActivity)getActivity()).setRecycleListItem(recycleListItem);
         ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
     }
 }

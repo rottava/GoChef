@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -35,34 +34,56 @@ public class FavFragment extends Fragment implements RecycleListAdapter.ItemClic
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_fav, container, false);
         mTextView = mView.findViewById(R.id.favText);
-        mScrollView =  mView.findViewById(R.id.favScrollView);
-        Runnable runnable=new Runnable() {
-            @Override
-            public void run() {
-                mScrollView.fullScroll(ScrollView.FOCUS_UP);
-            }
-        };
-        mScrollView.post(runnable);
 
         //RecycleViewFiller
-        ArrayList<Integer> viewColors = new ArrayList<>();
-        viewColors.add(Color.BLUE);
-        viewColors.add(Color.YELLOW);
-        viewColors.add(Color.MAGENTA);
-        viewColors.add(Color.RED);
-        viewColors.add(Color.BLACK);
-
-        ArrayList<String> favNames = new ArrayList<>();
-        favNames.add("Boiled Water");
-        favNames.add("Awesome Barbecue");
-        favNames.add("Dry Camel and gin");
-        favNames.add("German Black Sheep n®12");
-        favNames.add("Roasted Goat w/ Honey n' pepper");
+        ArrayList<RecycleListItem> recipes = new ArrayList<>();
+        RecycleListItem recipe = new RecycleListItem();
+        recipe.setImage(Color.BLUE);
+        recipe.setName("Boiled Water");
+        ArrayList<String> ingredients = new ArrayList<>();
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        recipe.setIngredients(ingredients);
+        ArrayList<String> steps = new ArrayList<>();
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.YELLOW);
+        recipe.setName("Awesome Barbecue");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.MAGENTA);
+        recipe.setName("Dry Camel and gin");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.RED);
+        recipe.setName("German Black Sheep n®12");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.BLACK);
+        recipe.setName("Roasted Goat w/ Honey n' pepper");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
 
         // set up the RecyclerView
         RecyclerView recyclerView = mView.findViewById(R.id.listaReceita);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        adapter = new RecycleListAdapter(getContext(), viewColors, favNames);
+        adapter = new RecycleListAdapter(getContext(), recipes);
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
 
@@ -70,8 +91,10 @@ public class FavFragment extends Fragment implements RecycleListAdapter.ItemClic
     }
 
     @Override
-    public void onItemClick(View view, int position) {
+    public void onItemClick(View view, int position, RecycleListItem recycleListItem) {
+        ((MainActivity)getActivity()).showButton();
         ((MainActivity)getActivity()).setLastItem(position);
+        ((MainActivity)getActivity()).setRecycleListItem(recycleListItem);
         ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
     }
 

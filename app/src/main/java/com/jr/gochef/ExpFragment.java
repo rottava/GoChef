@@ -27,12 +27,16 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
 
     private TextView expType;
     private TextView expName;
+    private TextView expIngredients;
+    private TextView expSteps;
     private ImageView expBigImage;
     private ImageView expBack;
     private ImageView expShare;
     private ImageView expFav;
     private ScrollView mScrollView;
     private RecycleListAdapter adapter;
+    private RecycleListItem recycleListItem;
+    private int fav;
 
     public ExpFragment() {
     }
@@ -49,15 +53,13 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
         View mView = inflater.inflate(R.layout.fragment_exp, container, false);
         expType = mView.findViewById(R.id.expRecipeType);
         expName = mView.findViewById(R.id.expRecipeName);
+        expIngredients = mView.findViewById(R.id.expIngredientsList);
+        expSteps = mView.findViewById(R.id.expStepsList);
         expBigImage = mView.findViewById(R.id.expImageView);
         expBack = mView.findViewById(R.id.expBack);
         expBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                int index = getActivity().getFragmentManager().getBackStackEntryCount() - 1;
-                FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(index);
-                String tag = backEntry.getName();
-                Fragment fragment = getFragmentManager().findFragmentByTag(tag);
-                ((MainActivity)getActivity()).replaceFragment(fragment);
+                ((MainActivity)getActivity()).reloadFragment();
             }
         });
         expShare = mView.findViewById(R.id.expShare);
@@ -71,55 +73,86 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
             }
         });
         expFav = mView.findViewById(R.id.expFav);
+        fav = 0;
         expFav.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                expFav.setBackgroundResource(R.drawable.ic_fav);
+                if(fav == 0){
+                    expFav.setBackgroundResource(R.drawable.ic_fav);
+                    fav = 1;
+                } else {
+                    expFav.setBackgroundResource(R.drawable.ic_fav_out);
+                    fav = 0;
+                }
             }
             ///TODO
         });
 
-        mScrollView =  mView.findViewById(R.id.expScrollView);
-        Runnable runnable=new Runnable() {
-            @Override
-            public void run() {
-                mScrollView.fullScroll(ScrollView.FOCUS_UP);
-            }
-        };
-        mScrollView.post(runnable);
+        recycleListItem = ((MainActivity)getActivity()).getRecycleListItem();
+        expName.setText(recycleListItem.getName());
+        expBigImage.setBackgroundColor(recycleListItem.getImage());
+        String text="\n";
+        for(String elemento: recycleListItem.getIngredients()){
+            text = text + "• " + elemento + "\n";
+        }
+        expIngredients.setText(text);
+        text="\n";
+        int n=1;
+        for(String elemento: recycleListItem.getSteps()){
+            text = text + n +") " + elemento + "\n";
+            n++;
+        }
+        expSteps.setText(text);
 
         //RecycleViewFiller
-        ArrayList<Integer> viewColors = new ArrayList<>();
-        viewColors.add(Color.BLUE);
-        viewColors.add(Color.YELLOW);
-        viewColors.add(Color.MAGENTA);
-        viewColors.add(Color.RED);
-        viewColors.add(Color.BLACK);
-
-        ArrayList<String> favNames = new ArrayList<>();
-        favNames.add("Boiled Water");
-        favNames.add("Awesome Barbecue");
-        favNames.add("Dry Camel and gin");
-        favNames.add("German Black Sheep n®12");
-        favNames.add("Roasted Goat w/ Honey n' pepper");
+        ArrayList<RecycleListItem> recipes = new ArrayList<>();
+        RecycleListItem recipe = new RecycleListItem();
+        recipe.setImage(Color.BLUE);
+        recipe.setName("Boiled Water");
+        ArrayList<String> ingredients = new ArrayList<>();
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        ingredients.add("Water");
+        recipe.setIngredients(ingredients);
+        ArrayList<String> steps = new ArrayList<>();
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        steps.add("Boil the water");
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.YELLOW);
+        recipe.setName("Awesome Barbecue");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.MAGENTA);
+        recipe.setName("Dry Camel and gin");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.RED);
+        recipe.setName("German Black Sheep n®12");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
+        recipe = new RecycleListItem();
+        recipe.setImage(Color.BLACK);
+        recipe.setName("Roasted Goat w/ Honey n' pepper");
+        recipe.setIngredients(ingredients);
+        recipe.setSteps(steps);
+        recipes.add(recipe);
 
         // set up the RecyclerView
-        RecyclerView recyclerView = mView.findViewById(R.id.expListIngredients);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        adapter = new RecycleListAdapter(getContext(), favNames);
-        adapter.setOnItemClickListener(this);
-        recyclerView.setAdapter(adapter);
-
-        // set up the RecyclerView
-        recyclerView = mView.findViewById(R.id.expListSteps);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-        adapter = new RecycleListAdapter(getContext(), favNames);
-        adapter.setOnItemClickListener(this);
-        recyclerView.setAdapter(adapter);
-
-        // set up the RecyclerView
-        recyclerView = mView.findViewById(R.id.expListMore);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        adapter = new RecycleListAdapter(getContext(), viewColors, favNames);
+        RecyclerView recyclerView = mView.findViewById(R.id.expListMore);
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(horizontalLayoutManager);
+        adapter = new RecycleListAdapter(getContext(), recipes);
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
 
@@ -127,8 +160,10 @@ public class ExpFragment extends Fragment implements RecycleListAdapter.ItemClic
     }
 
     @Override
-    public void onItemClick(View view, int position) {
-        Toast.makeText(getContext(), "You clicked " + adapter.getItem(position) + " on item position " + position, Toast.LENGTH_SHORT).show();
+    public void onItemClick(View view, int position, RecycleListItem recycleListItem) {
+        ((MainActivity)getActivity()).setLastItem(position);
+        ((MainActivity)getActivity()).setRecycleListItem(recycleListItem);
+        ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
     }
 
 }

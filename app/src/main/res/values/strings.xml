@@ -27,6 +27,7 @@
     <string name="exp_back">Retornar</string>
     <string name="exp_ing_dot">•</string>
     <string name="exp_step_dot">n</string>
+    <string name="exp_url">Acesse o Site</string>
 
 
 </resources>

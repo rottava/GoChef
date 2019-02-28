@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true">
 
     <ScrollView
         android:id="@+id/expScrollView"
@@ -27,6 +28,7 @@
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:contentDescription="@string/exp_back"
+                android:elevation="1dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_back" />
@@ -38,6 +40,7 @@
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_marginEnd="@dimen/item_horizontal_margin"
                 android:contentDescription="@string/exp_fav"
+                android:elevation="1dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_fav_out" />
@@ -46,6 +49,7 @@
                 android:id="@+id/expShare"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:elevation="1dp"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
                 android:contentDescription="@string/exp_share"
@@ -103,25 +107,21 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/expRecipeName" />
 
-            <LinearLayout
-                android:id="@+id/expIngredientsLayout"
+            <TextView
+                android:id="@+id/expIngredientsList"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/item_vertical_margin_half"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:background="@android:color/white"
-                android:orientation="vertical"
+                android:background="@drawable/ic_round"
+                android:text="@string/exp_ingredients"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expIngredients">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/expListIngredients"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/expIngredients" />
 
             <TextView
                 android:id="@+id/expSteps"
@@ -134,26 +134,23 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expIngredientsLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/expIngredientsList" />
 
-            <LinearLayout
-                android:id="@+id/expStepsLayout"
+            <TextView
+                android:id="@+id/expStepsList"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/activity_horizontal_margin"
                 android:layout_marginTop="@dimen/item_vertical_margin_half"
                 android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:orientation="vertical"
+                android:background="@drawable/ic_round"
+                android:text="@string/exp_steps"
+                android:textAllCaps="true"
+                android:textColor="@android:color/black"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expSteps">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/expListSteps"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </LinearLayout>
+                app:layout_constraintTop_toBottomOf="@+id/expSteps" />
 
             <TextView
                 android:id="@+id/expMore"
@@ -166,7 +163,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/expStepsLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/expStepsList" />
 
             <LinearLayout
                 android:id="@+id/expMoreLayout"

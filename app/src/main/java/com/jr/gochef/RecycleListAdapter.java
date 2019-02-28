@@ -12,21 +12,14 @@ import java.util.List;
 
 public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.ViewHolder> {
 
-    private List<Integer> mViewColors;
-    private List<String> mRecipes;
+    private List<RecycleListItem> mRecipes;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
-    RecycleListAdapter(Context context, List<Integer> colors, List<String> recipes) {
+    RecycleListAdapter(Context context, List<RecycleListItem> mRecipes) {
         this.mInflater = LayoutInflater.from(context);
-        this.mViewColors = colors;
-        this.mRecipes = recipes;
-    }
-    // data is passed into the constructor
-    RecycleListAdapter(Context context, List<String> recipes) {
-        this.mInflater = LayoutInflater.from(context);
-        this.mRecipes = recipes;
+        this.mRecipes = mRecipes;
     }
 
     // inflates the row layout from xml when needed
@@ -40,9 +33,8 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
     // binds the data to the view and textview in each row
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        int color = mViewColors.get(position);
-        String recipe = mRecipes.get(position);
-        holder.myView.setBackgroundColor(color);
+        String recipe = mRecipes.get(position).getName();
+        holder.myView.setBackgroundColor( mRecipes.get(position).getImage());
         holder.myTextView.setText(recipe);
     }
 
@@ -66,12 +58,12 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition(), mRecipes.get(getAdapterPosition()));
         }
     }
 
     // convenience method for getting data at click position
-    public String getItem(int id) {
+    public RecycleListItem getItem(int id) {
         return mRecipes.get(id);
     }
 
@@ -82,6 +74,6 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View view, int position);
+        void onItemClick(View view, int position, RecycleListItem recycleListItem);
     }
 }

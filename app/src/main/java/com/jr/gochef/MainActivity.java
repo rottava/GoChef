@@ -1,5 +1,7 @@
 package com.jr.gochef;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -9,13 +11,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private int state = 0;
-    private int lastItem = 0;
-
+    private static int state = 0;
+    private static int lastItem = 0;
+    private static RecycleListItem recycleListItem;
+    private Button mButton;
+    private String url = "http://www.google.com";
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -53,6 +61,18 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "ID: " + getIntent().getStringExtra("datalog"));
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
+        mButton = findViewById(R.id.nav_button);
+        mButton.setVisibility(View.GONE);
+        mButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                //i.setData(Uri.parse(recycleListItem.getUrl()));
+                startActivity(i);
+            }
+        });
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         Fragment mFragment = new RecipeFragment();
@@ -69,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void reloadFragment() {
         Fragment destFragment = null;
+        mButton.setVisibility(View.GONE);
         switch (state){
             case 0:
                 destFragment = new RecipeFragment();
@@ -93,6 +114,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void setLastItem(int item){
         lastItem = item;
+    }
+
+    public RecycleListItem getRecycleListItem() {
+        return recycleListItem;
+    }
+
+    public void setRecycleListItem(RecycleListItem recycleListItem) {
+        this.recycleListItem = recycleListItem;
+    }
+
+    public void showButton(){
+        mButton.setVisibility(View.VISIBLE);
     }
 
 }
