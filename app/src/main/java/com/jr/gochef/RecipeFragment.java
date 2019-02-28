@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,6 +42,12 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_recipe, container, false);
         topView = mView.findViewById(R.id.topImageView);
+        topView.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                ((MainActivity)getActivity()).setLastItem(0);
+                ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
+            }
+        });
         topName = mView.findViewById(R.id.topRecipeName);
         topTipe = mView.findViewById(R.id.topRecipeType);
         mSearchView = mView.findViewById(R.id.searchView);
@@ -88,6 +95,7 @@ public class RecipeFragment extends Fragment implements RecycleListAdapter.ItemC
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(getContext(), "You clicked " + adapter.getItem(position) + " on item position " + position, Toast.LENGTH_SHORT).show();
+        ((MainActivity)getActivity()).setLastItem(position);
+        ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
     }
 }

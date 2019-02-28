@@ -71,7 +71,8 @@ public class FavFragment extends Fragment implements RecycleListAdapter.ItemClic
 
     @Override
     public void onItemClick(View view, int position) {
-        Toast.makeText(getContext(), "You clicked " + adapter.getItem(position) + " on item position " + position, Toast.LENGTH_SHORT).show();
+        ((MainActivity)getActivity()).setLastItem(position);
+        ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
     }
 
 }

@@ -23,6 +23,11 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
         this.mViewColors = colors;
         this.mRecipes = recipes;
     }
+    // data is passed into the constructor
+    RecycleListAdapter(Context context, List<String> recipes) {
+        this.mInflater = LayoutInflater.from(context);
+        this.mRecipes = recipes;
+    }
 
     // inflates the row layout from xml when needed
     @Override
