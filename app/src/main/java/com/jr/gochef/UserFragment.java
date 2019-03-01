@@ -1,5 +1,7 @@
 package com.jr.gochef;
 
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -18,6 +20,7 @@ import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -59,11 +62,14 @@ public class UserFragment extends Fragment {
             }
         } else {
             if(!user.getImage().equals("")){
-                userPhoto.setImageURI(Uri.parse(user.getImage()));
+                    userPhoto.setImageURI(Uri.parse(user.getImage()));
             }
         }
+        if(userPhoto.getDrawable() == null) {
+            userPhoto.setImageResource(R.drawable.ic_user);
+        }
         userName = mView.findViewById(R.id.userNameView);
-
+        userName.setText(user.getName());
         mButton = mView.findViewById(R.id.userButtonView);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,6 +82,9 @@ public class UserFragment extends Fragment {
                             .build();
                     GoogleSignIn.getClient(getActivity(), gso).signOut();
                 }
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish();
             }
         });
         return mView;

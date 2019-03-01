@@ -1,28 +1,20 @@
 package com.jr.gochef;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.widget.ShareDialog;
-
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import okhttp3.Call;
@@ -52,8 +44,8 @@ public class SearchFragment extends Fragment {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_search, container, false);
         search = getArguments().getString("search");
-        mRecyclerView = mView.findViewById(R.id.expListMore);
-        searchType = mView.findViewById(R.id.searchViewText);
+        mRecyclerView = mView.findViewById(R.id.searchList);
+        searchType = mView.findViewById(R.id.searchText);
         searchType.setText(search);
         searchBack = mView.findViewById(R.id.searchView);
         searchBack.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +76,7 @@ public class SearchFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+                        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
                         mRecyclerView.setLayoutManager(layoutManager);
                         mRecyclerView.setHasFixedSize(true);
                         adapter = new RecycleListAdapter(getContext(), recipes);

@@ -13,6 +13,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FavFragment extends Fragment implements RecycleListAdapter.ItemClickListener {
     
@@ -20,7 +21,7 @@ public class FavFragment extends Fragment implements RecycleListAdapter.ItemClic
     private ScrollView mScrollView;
     private RecyclerView mRecyclerView;
     private RecycleListAdapter adapter;
-    private ArrayList<Recipe> recipes;
+    private List<Recipe> recipes;
     private User user;
 
     public FavFragment() {
@@ -38,6 +39,8 @@ public class FavFragment extends Fragment implements RecycleListAdapter.ItemClic
         View mView = inflater.inflate(R.layout.fragment_fav, container, false);
         mTextView = mView.findViewById(R.id.searchText);
         user = ((MainActivity)getContext()).getUser();
+        recipes = user.getFavorites();
+        //fillRecipesTest();
         // set up the RecyclerView
         mRecyclerView = mView.findViewById(R.id.listaReceita);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);

@@ -65,7 +65,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "ID: " + getIntent().getStringExtra("datalog"));
-        user = (User) getIntent().getSerializableExtra("user");
+        User nUser = (User) getIntent().getSerializableExtra("user");
+        user = nUser;
+        loadData();
+        if(user == null){
+            user = nUser;
+            saveData();
+        }
+        /*/
         File file = new File(user.getId());
             if(file.exists()) {
                 loadData();
@@ -73,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
             else {
                 saveData();
             }
+            /*/
         BottomNavigationView navigation = findViewById(R.id.navigation);
         mButton = findViewById(R.id.nav_button);
         mButton.setVisibility(View.GONE);
@@ -149,23 +157,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadData(){
-        try{
-            FileInputStream fis = this.openFileInput(user.getId());
-            try{
-                ObjectInputStream is = new ObjectInputStream(fis);
-                try{
-                    user = (User) is.readObject();
-                    is.close();
-                    fis.close();
-                }catch (ClassNotFoundException e){
+            try {
+                FileInputStream fis = this.openFileInput(user.getId());
+                try {
+                    ObjectInputStream is = new ObjectInputStream(fis);
+                    try {
+                        user = (User) is.readObject();
+                        is.close();
+                        fis.close();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }catch(IOException e) {
-                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                String a = e.toString();
+                user = null;
             }
-        }catch(FileNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
     public void saveData(){
@@ -173,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = this.openFileOutput(user.getId(), Context.MODE_PRIVATE);
             try{
                 ObjectOutputStream os = new ObjectOutputStream(fos);
-                os.writeObject(this);
+                os.writeObject(user);
                 os.close();
                 fos.close();
             }catch(IOException e) {
