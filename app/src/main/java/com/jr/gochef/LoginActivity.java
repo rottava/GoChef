@@ -1,6 +1,7 @@
 package com.jr.gochef;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,7 +11,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
@@ -22,19 +22,20 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.acl.AclEntry;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private String dataLog;
     private Integer G_SIGN_IN = 9001;
 
     private LoginButton buttonFacebook;
@@ -42,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private SignInButton buttonGoogle;
     private GoogleSignInClient googleSignInClient;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,22 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.w(TAG, "Get session data " + response.getRawResponse());
                                 } else {
                                     Log.i(TAG, "Facebook signIn Result: successfully");
+                                    try{
+                                        user.setName(me.getString("name"));
+                                        user.setEmail(me.getString("email"));
+                                        String txt = "F" + me.getString("id");
+                                        user.setId(txt);
+                                        try{
+                                            URL url = new URL("https://graph.facebook.com/" + me.getString("id") + "/picture?type=large");
+                                            user.setImage(url.toString());
+                                        }catch (MalformedURLException e){
+                                            e.printStackTrace();
+                                        }
+                                        user.setFavorites(new ArrayList<Recipe>());
+                                        user.setType(true);
+                                    } catch (JSONException e){
+                                        e.printStackTrace();
+                                    }
                                     loginFacebook();
                                 }
                             }
@@ -109,11 +127,17 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
             if(account != null){
-                googleSignInClient.silentSignIn();
+                googleSignInClient.silentSignIn().addOnSuccessListener(new OnSuccessListener<GoogleSignInAccount>() {
+                    @Override
+                    public void onSuccess(GoogleSignInAccount googleSignInAccount) {
+                        loginGoogle(googleSignInAccount);
+                    }
+                });
             }
         }
     }
 
+    /*/
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -122,8 +146,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             googleSignInClient.signOut();
         }
-    }
-
+    }/*/
 
     private void signIn() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
@@ -164,16 +187,22 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loginGoogle(GoogleSignInAccount googleUser){
         Intent intent = new Intent(getBaseContext(), MainActivity.class);
-        String dataLog = "G" + googleUser.getId();
-        intent.putExtra("datalog", dataLog);
+        user = new User();
+        user.setName(googleUser.getDisplayName());
+        user.setEmail(googleUser.getEmail());
+        String txt = "G" + googleUser.getId();
+        user.setId(txt);
+        user.setImage(googleUser.getPhotoUrl().toString());
+        user.setFavorites(new ArrayList<Recipe>());
+        user.setType(false);
+        intent.putExtra("user", user);
         startActivity(intent);
         finish();
     }
 
     private void loginFacebook(){
         Intent intent = new Intent(getBaseContext(), MainActivity.class);
-        String dataLog = "F" + AccessToken.getCurrentAccessToken().getUserId();
-        intent.putExtra("datalog", dataLog);
+        intent.putExtra("user", user);
         startActivity(intent);
         finish();
     }
