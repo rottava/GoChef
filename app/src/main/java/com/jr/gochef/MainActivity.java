@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
             FileOutputStream fos = this.openFileOutput(user.getId(), Context.MODE_PRIVATE);
             try{
                 ObjectOutputStream os = new ObjectOutputStream(fos);
-                os.writeObject(this);
+                os.writeObject(user);
                 os.close();
                 fos.close();
             }catch(IOException e) {

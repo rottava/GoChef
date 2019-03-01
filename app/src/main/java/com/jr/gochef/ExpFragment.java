@@ -64,6 +64,7 @@ public class ExpFragment extends Fragment {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_exp, container, false);
         user = ((MainActivity)getActivity()).getUser();
+        mRecipe = ((MainActivity)getActivity()).getRecipeItem();
         mRecyclerView = mView.findViewById(R.id.expListMore);
         expType = mView.findViewById(R.id.expRecipeType);
         expName = mView.findViewById(R.id.expRecipeName);
@@ -90,13 +91,13 @@ public class ExpFragment extends Fragment {
         int loop;
         for(loop=0; loop < user.getFavorites().size(); loop++){
             if(user.getFavorites().get(loop).getRecipeName().equals(mRecipe.getRecipeName())){
-                fav = 0;
-                expFav.setBackgroundResource(R.drawable.ic_fav_out);
+                fav = 1;
+                expFav.setBackgroundResource(R.drawable.ic_fav);
                 loop = user.getFavorites().size();
             } else {
                 if(loop == user.getFavorites().size()-1){
-                    fav = 1;
-                    expFav.setBackgroundResource(R.drawable.ic_fav);
+                    fav = 0;
+                    expFav.setBackgroundResource(R.drawable.ic_fav_out);
                 }
             }
         }
@@ -120,7 +121,6 @@ public class ExpFragment extends Fragment {
             }
         });
 
-        mRecipe = ((MainActivity)getActivity()).getRecipeItem();
         expName.setText(mRecipe.getRecipeName());
         expType.setText(mRecipe.getAttributes());
 
