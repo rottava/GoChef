@@ -5,12 +5,10 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -22,7 +20,8 @@ public class FavFragment extends Fragment implements RecycleListAdapter.ItemClic
     private ScrollView mScrollView;
     private RecyclerView mRecyclerView;
     private RecycleListAdapter adapter;
-    ArrayList<Recipe> recipes;
+    private ArrayList<Recipe> recipes;
+    private User user;
 
     public FavFragment() {
     }
@@ -37,8 +36,8 @@ public class FavFragment extends Fragment implements RecycleListAdapter.ItemClic
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_fav, container, false);
-        mTextView = mView.findViewById(R.id.favText);
-        fillRecipesTest();
+        mTextView = mView.findViewById(R.id.searchText);
+        user = ((MainActivity)getContext()).getUser();
         // set up the RecyclerView
         mRecyclerView = mView.findViewById(R.id.listaReceita);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);

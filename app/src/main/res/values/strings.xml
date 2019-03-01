@@ -4,7 +4,7 @@
     <string name="facebook_app_id">1297226603776561</string>
     <string name="fb_login_protocol_scheme">fb1297226603776561</string>
     //Login Activity
-    <string name="login_app_text">Loren ipsum dolor sit amet, consectetur adipiscing elit.\nAebeab at augue diam. Fusce ut ex at urna fringilla blandit.</string>
+    <string name="login_app_text">Provavelmente não muito bom...\nMelhor testar pra ter certeza!</string>
     <string name="login_logo_description">Logo login activity</string>
     <string name="login_null_text">O QUE VAI AQUI</string>
     //Main Activity
@@ -28,6 +28,12 @@
     <string name="exp_ing_dot">•</string>
     <string name="exp_step_dot">n</string>
     <string name="exp_url">Acesse o Site</string>
+    <string name="user_photo">Foto de usuario</string>
+    <string name="user_name">Nome</string>
+    <string name="user_logout">Sair</string>
+    <string name="user_cred">Feito por Junior Rottava.\nMe contrata pf</string>
+    <string name="search_text">Busca!</string>
+
 
 
 </resources>

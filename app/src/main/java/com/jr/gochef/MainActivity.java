@@ -1,5 +1,6 @@
 package com.jr.gochef;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
@@ -22,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private static Recipe mRecipe;
     private Button mButton;
     private String url = "http://www.google.com";
+    private User user;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -39,13 +49,11 @@ public class MainActivity extends AppCompatActivity {
                     Fragment favFragment = new FavFragment();
                     replaceFragment(favFragment);
                     return true;
-                /*case R.id.navigation_user:
-                    state = 2;
-                    Fragment userFragment = new RecipeFragment();
+                case R.id.navigation_user:
+                    state = 0;
+                    Fragment userFragment = new UserFragment();
                     replaceFragment(userFragment);
                     return true;
-
-                 */
             }
             return false;
         }
@@ -57,7 +65,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Log.d(TAG, "ID: " + getIntent().getStringExtra("datalog"));
-
+        user = (User) getIntent().getSerializableExtra("user");
+        File file = new File(user.getId());
+            if(file.exists()) {
+                loadData();
+            }
+            else {
+                saveData();
+            }
         BottomNavigationView navigation = findViewById(R.id.navigation);
         mButton = findViewById(R.id.nav_button);
         mButton.setVisibility(View.GONE);
@@ -67,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
-                //i.setData(Uri.parse(recycleListItem.getUrl()));
+                //i.setData(Uri.parse(mRecipe.getImageUrl()));
                 startActivity(i);
             }
         });
@@ -95,9 +110,6 @@ public class MainActivity extends AppCompatActivity {
             case 1:
                 destFragment = new FavFragment();
                 break;
-            /*case 2:
-                destFragment = new userFragment();
-                break;*/
         }
         replaceFragment(destFragment);
     }
@@ -123,8 +135,53 @@ public class MainActivity extends AppCompatActivity {
         url = mRecipe.imageUrl;
     }
 
+    public User getUser(){
+        return  user;
+    }
+
+    public void setUser(User user){
+        this.user = user;
+        saveData();
+    }
+
     public void showButton(){
         mButton.setVisibility(View.VISIBLE);
+    }
+
+    public void loadData(){
+        try{
+            FileInputStream fis = this.openFileInput(user.getId());
+            try{
+                ObjectInputStream is = new ObjectInputStream(fis);
+                try{
+                    user = (User) is.readObject();
+                    is.close();
+                    fis.close();
+                }catch (ClassNotFoundException e){
+                    e.printStackTrace();
+                }
+            }catch(IOException e) {
+                e.printStackTrace();
+            }
+        }catch(FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveData(){
+        try{
+            FileOutputStream fos = this.openFileOutput(user.getId(), Context.MODE_PRIVATE);
+            try{
+                ObjectOutputStream os = new ObjectOutputStream(fos);
+                os.writeObject(this);
+                os.close();
+                fos.close();
+            }catch(IOException e) {
+                e.printStackTrace();
+            }
+        }catch(FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }

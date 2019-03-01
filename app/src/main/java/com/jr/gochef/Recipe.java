@@ -2,12 +2,13 @@ package com.jr.gochef;
 
 import org.parceler.Parcel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 
 @Parcel
-public class Recipe {
+public class Recipe implements Serializable {
     String recipeName;
     List<String> ingredients = new ArrayList<>();
     List<String> steps = new ArrayList<>();

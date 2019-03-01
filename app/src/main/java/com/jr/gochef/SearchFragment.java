@@ -1,6 +1,5 @@
 package com.jr.gochef;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,7 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,9 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.AccessToken;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 
@@ -32,25 +29,16 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class ExpFragment extends Fragment {
+public class SearchFragment extends Fragment {
 
-    private TextView expType;
-    private TextView expName;
-    private TextView expIngredients;
-    private TextView expSteps;
-    private ImageView expBigImage;
-    private ImageView expBack;
-    private ImageView expShare;
-    private ImageView expFav;
-    private ScrollView mScrollView;
+    private TextView searchType;
+    private ImageView searchBack;
     private RecycleListAdapter adapter;
-    RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private ArrayList<Recipe> recipes;
-    private Recipe mRecipe;
-    private int fav;
-    private User user;
+    private String search;
 
-    public ExpFragment() {
+    public SearchFragment() {
     }
 
     @Override
@@ -62,96 +50,22 @@ public class ExpFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
-        View mView = inflater.inflate(R.layout.fragment_exp, container, false);
-        user = ((MainActivity)getActivity()).getUser();
+        View mView = inflater.inflate(R.layout.fragment_search, container, false);
+        search = getArguments().getString("search");
         mRecyclerView = mView.findViewById(R.id.expListMore);
-        expType = mView.findViewById(R.id.expRecipeType);
-        expName = mView.findViewById(R.id.expRecipeName);
-        expIngredients = mView.findViewById(R.id.expIngredientsList);
-        expSteps = mView.findViewById(R.id.expStepsList);
-        expBigImage = mView.findViewById(R.id.expImageView);
-        expBack = mView.findViewById(R.id.expBack);
-        expBack.setOnClickListener(new View.OnClickListener() {
+        searchType = mView.findViewById(R.id.searchViewText);
+        searchType.setText(search);
+        searchBack = mView.findViewById(R.id.searchView);
+        searchBack.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((MainActivity)getActivity()).setUser(user);
-                ((MainActivity)getActivity()).reloadFragment();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.FragmentLayout, new RecipeFragment());
+                fragmentTransaction.commit();
             }
         });
-        expShare = mView.findViewById(R.id.expShare);
-        expShare.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                ShareLinkContent content = new ShareLinkContent.Builder()
-                        .setContentUrl(Uri.parse("https://developers.facebook.com"))
-                        .build();
-                ShareDialog.show(getActivity(), content);
-            }
-        });
-        expFav = mView.findViewById(R.id.expFav);
-        int loop;
-        for(loop=0; loop < user.getFavorites().size(); loop++){
-            if(user.getFavorites().get(loop).getRecipeName().equals(mRecipe.getRecipeName())){
-                fav = 0;
-                expFav.setBackgroundResource(R.drawable.ic_fav_out);
-                loop = user.getFavorites().size();
-            } else {
-                if(loop == user.getFavorites().size()-1){
-                    fav = 1;
-                    expFav.setBackgroundResource(R.drawable.ic_fav);
-                }
-            }
-        }
-        expFav.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                int loop;
-                if(fav == 0){
-                    fav = 1;
-                    expFav.setBackgroundResource(R.drawable.ic_fav);
-                    user.getFavorites().add(mRecipe);
-                } else {
-                    for(loop=0; loop < user.getFavorites().size(); loop++) {
-                        if (user.getFavorites().get(loop).getRecipeName().equals(mRecipe.getRecipeName())) {
-                            fav = 0;
-                            expFav.setBackgroundResource(R.drawable.ic_fav_out);
-                            user.getFavorites().remove(loop);
-                            loop = user.getFavorites().size();
-                        }
-                    }
-                }
-            }
-        });
-
-        mRecipe = ((MainActivity)getActivity()).getRecipeItem();
-        expName.setText(mRecipe.getRecipeName());
-        expType.setText(mRecipe.getAttributes());
-
-        try{
-            URL url = new URL(mRecipe.getImageUrl());
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            expBigImage.setImageBitmap(bmp);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        String text="\n";
-        for(String elemento: mRecipe.getIngredients()){
-            text = text + "• " + elemento + "\n";
-        }
-        expIngredients.setText(text);
-
-        text="\n";
-        int n=1;
-        for(String elemento: mRecipe.getIngredients()
-        ){
-            text = text + n +") " + elemento + "\n";
-            n++;
-        }
-        expSteps.setText(text);
 
         fillRecipes();
-        if(recipes == null || recipes.size() == 0){
-            fillRecipesTest();
-        }
 
         return mView;
 
@@ -159,7 +73,7 @@ public class ExpFragment extends Fragment {
 
     private void fillRecipes(){
         final YummlyService yummlyService = new YummlyService();
-        yummlyService.findRecipes(mRecipe.getIngredients().get(0), new Callback() {
+        yummlyService.findRecipes(search, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();

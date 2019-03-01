@@ -54,7 +54,11 @@ public class RecycleListAdapter extends RecyclerView.Adapter<RecycleListAdapter.
     // total number of rows
     @Override
     public int getItemCount() {
-        return mRecipes.size();
+        if(mRecipes==null){
+            return 0;
+        }else{
+            return mRecipes.size();
+        }
     }
 
     // stores and recycles views as they are scrolled off screen

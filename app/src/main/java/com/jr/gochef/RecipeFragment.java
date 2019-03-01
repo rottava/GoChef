@@ -6,6 +6,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,8 +17,6 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
-
-import com.google.android.gms.common.util.ArrayUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -64,6 +64,27 @@ public class RecipeFragment extends Fragment{
         topName = mView.findViewById(R.id.topRecipeName);
         topType = mView.findViewById(R.id.topRecipeType);
         mSearchView = mView.findViewById(R.id.searchView);
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                Bundle bundle=new Bundle();
+                bundle.putString("search", mSearchView.getQuery().toString());
+                SearchFragment fragment = new SearchFragment();
+                fragment.setArguments(bundle);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.FragmentLayout, fragment);
+                fragmentTransaction.commit();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                //Log.d(TAG, "Query: " + newText);
+                return false;
+            }
+        });
         searchText = mView.findViewById(R.id.searchViewText);
         searchText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +130,7 @@ public class RecipeFragment extends Fragment{
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
                         mRecyclerView.setLayoutManager(layoutManager);
                         mRecyclerView.setHasFixedSize(true);
                         adapter = new RecycleListAdapter(getContext(), recipes);
@@ -120,8 +141,6 @@ public class RecipeFragment extends Fragment{
         });
     }
 
-
-    //
     private void fillRecipesTest(){
         //RecycleViewFiller
         recipes = new ArrayList<>();
