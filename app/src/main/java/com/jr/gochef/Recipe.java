@@ -16,7 +16,6 @@ public class Recipe implements Serializable {
     String attributes;
     String source;
     String id;
-    private String pushId;
     String index;
 
     public Recipe() {}
@@ -32,65 +31,45 @@ public class Recipe implements Serializable {
         this.steps.add("not_specified");
     }
 
-    public String getRecipeName() {
+    String getRecipeName() {
         return recipeName;
     }
 
-    public List<String> getIngredients() {
+    List<String> getIngredients() {
         return ingredients;
     }
 
-    public String getImageUrl() {
+    String getImageUrl() {
         return  imageUrl;
     }
 
-    public String getAttributes() {
+    String getAttributes() {
         return attributes;
-    }
-
-    public String getSource() {
-        return source;
     }
 
     public String getId() { return id; }
 
-    public void setPushId(String pushId) {
-        this.pushId = pushId;
-    }
-
-    public String getIndex() {
-        return index;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
-    }
-
-    public void setRecipeName(String recipeName){
+    void setRecipeName(String recipeName){
         this.recipeName = recipeName;
     }
 
-    public void setIngredients(List<String> ingredients){
+    void setIngredients(List<String> ingredients){
         this.ingredients = ingredients;
     }
 
-    public void setImageUrl(String imageUrl){
+    void setImageUrl(String imageUrl){
         this.imageUrl = imageUrl;
     }
 
-    public void setAttributes(String rating){
-        this.attributes = rating;
+    void setAttributes(String attributes){
+        this.attributes = attributes;
     }
 
     public void setId(String id){
         this.id = id;
     }
 
-    public void setSource(String source){
-        this.source = source;
-    }
-
-    public void setSteps(List<String> steps){
+    void setSteps(List<String> steps){
         this.steps = steps;
     }
 

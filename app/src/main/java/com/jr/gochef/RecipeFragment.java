@@ -1,9 +1,12 @@
 package com.jr.gochef;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,13 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,13 +33,11 @@ public class RecipeFragment extends Fragment{
     private ImageView topView;
     private TextView topName;
     private TextView topType;
-    private TextView searchText;
-    private ScrollView mScrollView;
     private SearchView mSearchView;
     private RecycleListAdapter adapter;
     private RecyclerView mRecyclerView;
     private ArrayList<Recipe> recipes;
-    private String firstRecipe = "meat";
+    private Recipe topRecipe;
 
     public RecipeFragment() {
     }
@@ -49,15 +49,16 @@ public class RecipeFragment extends Fragment{
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Please note the third parameter should be false, otherwise a java.lang.IllegalStateException maybe thrown.
         View mView = inflater.inflate(R.layout.fragment_recipe, container, false);
         mRecyclerView = mView.findViewById(R.id.listaReceita);
         topView = mView.findViewById(R.id.topImageView);
         topView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ((MainActivity)getActivity()).showButton();
-                ((MainActivity)getActivity()).setLastItem(0);
+                ((MainActivity) Objects.requireNonNull(getActivity())).progressDialog();
+                ((MainActivity) Objects.requireNonNull(getActivity())).showButton();
+                ((MainActivity)getActivity()).setRecipeItem(topRecipe);
                 ((MainActivity)getActivity()).replaceFragment(new ExpFragment());
             }
         });
@@ -72,7 +73,7 @@ public class RecipeFragment extends Fragment{
                 bundle.putString("search", mSearchView.getQuery().toString());
                 SearchFragment fragment = new SearchFragment();
                 fragment.setArguments(bundle);
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentManager fragmentManager = Objects.requireNonNull(getActivity()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.FragmentLayout, fragment);
                 fragmentTransaction.commit();
@@ -85,7 +86,7 @@ public class RecipeFragment extends Fragment{
                 return false;
             }
         });
-        searchText = mView.findViewById(R.id.searchViewText);
+        TextView searchText = mView.findViewById(R.id.searchViewText);
         searchText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,39 +98,32 @@ public class RecipeFragment extends Fragment{
 
         if(recipes == null || recipes.size() == 0){
             fillRecipesTest();
+            topName.setText(recipes.get(0).getRecipeName());
+            topType.setText(recipes.get(0).getAttributes());
+            ((MainActivity) Objects.requireNonNull(getActivity())).setRecipeItem(recipes.get(0));
+            recipes.remove(recipes.get(0));
         }
-
-        topName.setText(recipes.get(0).getRecipeName());
-        topType.setText(recipes.get(0).getAttributes());
-
-        try{
-            URL url = new URL(recipes.get(0).getImageUrl());
-            Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-            topView.setImageBitmap(bmp);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        ((MainActivity)getActivity()).setRecipeItem(recipes.get(0));
-        recipes.remove(recipes.get(0));
 
         return mView;
     }
 
     private void fillRecipes(){
         final YummlyService yummlyService = new YummlyService();
-        yummlyService.findRecipes(firstRecipe, new Callback() {
+        String firstRecipe = "meat";
+        YummlyService.findRecipes(firstRecipe, new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
                     e.printStackTrace();
             }
             @Override
-            public void onResponse(Call call, Response response)  {
+            public void onResponse(@NonNull Call call, @NonNull Response response)  {
                 recipes = yummlyService.processResults(response);
-                getActivity().runOnUiThread(new Runnable() {
+                topRecipe = recipes.get(0);
+                recipes.remove(0);
+                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        new ImageLoader().execute(topRecipe.getImageUrl());
                         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
                         mRecyclerView.setLayoutManager(layoutManager);
                         mRecyclerView.setHasFixedSize(true);
@@ -158,6 +152,7 @@ public class RecipeFragment extends Fragment{
         recipe = new Recipe();
         recipe.setImageUrl(Integer.toString(Color.YELLOW));
         recipe.setRecipeName("Awesome Barbecue");
+        recipe.setAttributes("Dinner");
         recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
@@ -180,4 +175,33 @@ public class RecipeFragment extends Fragment{
         recipe.setSteps(steps);
         recipes.add(recipe);
     }//
+
+    @SuppressLint("StaticFieldLeak")
+    public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            Bitmap bitmap;
+            try {
+                bitmap = Helper.downloadDataFromUrl(urls[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+                bitmap = BitmapFactory.decodeResource(Objects.requireNonNull(getContext()).getResources(), R.drawable.ic_404);
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute( Bitmap result )  {
+            topView.setImageBitmap(result);
+            topName.setText(recipes.get(0).getRecipeName());
+            topType.setText(recipes.get(0).getAttributes());
+            ((MainActivity) Objects.requireNonNull(getContext())).progressDialog();
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.jr.gochef;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -32,16 +31,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
     private Integer G_SIGN_IN = 9001;
-
-    private LoginButton buttonFacebook;
     private CallbackManager callbackManager;
-
-    private SignInButton buttonGoogle;
     private GoogleSignInClient googleSignInClient;
     private User user;
 
@@ -51,9 +47,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         //Facebook Login
-        buttonFacebook = findViewById(R.id.button_login_facebook);
+        LoginButton buttonFacebook = findViewById(R.id.button_login_facebook);
         buttonFacebook.setReadPermissions(Arrays.asList("public_profile", "email"));
-        // Callback registration
         callbackManager = CallbackManager.Factory.create();
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -77,7 +72,6 @@ public class LoginActivity extends AppCompatActivity {
                                             e.printStackTrace();
                                         }
                                         user.setFavorites(new ArrayList<Recipe>());
-                                        user.setType(true);
                                     } catch (JSONException e){
                                         e.printStackTrace();
                                     }
@@ -98,7 +92,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         //Google Login
-        buttonGoogle = findViewById(R.id.button_login_google);
+        SignInButton buttonGoogle = findViewById(R.id.button_login_google);
         buttonGoogle.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 switch (v.getId()) {
@@ -136,17 +130,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /*/
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(AccessToken.isCurrentAccessTokenActive()) {
-            LoginManager.getInstance().logOut();
-        } else {
-            googleSignInClient.signOut();
-        }
-    }/*/
-
     private void signIn() {
         Intent signInIntent = googleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, G_SIGN_IN);
@@ -155,11 +138,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == G_SIGN_IN) {
-            // The Task returned from this call is always completed, no need to attach
-            // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
@@ -171,16 +150,12 @@ public class LoginActivity extends AppCompatActivity {
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            // Signed in successfully, show authenticated UI.
             Log.i(TAG, "Google signIn Result: successfully");
             if(account != null){
                 loginGoogle(account);
             }
         } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w(TAG,"Google signIn result: failed code=" + e.getStatusCode());
-            //loginGoogle(null);
         }
     }
 
@@ -190,9 +165,8 @@ public class LoginActivity extends AppCompatActivity {
         user.setName(googleUser.getDisplayName());
         user.setEmail(googleUser.getEmail());
         user.setId(googleUser.getId());
-        user.setImage(googleUser.getPhotoUrl().toString());
+        user.setImage(Objects.requireNonNull(googleUser.getPhotoUrl()).toString());
         user.setFavorites(new ArrayList<Recipe>());
-        user.setType(false);
         intent.putExtra("user", user);
         startActivity(intent);
         finish();

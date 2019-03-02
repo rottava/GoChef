@@ -1,5 +1,6 @@
 package com.jr.gochef;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,12 +11,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,13 +24,12 @@ import java.io.ObjectOutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
     private static int state = 0;
-    private static int lastItem = 0;
     private static Recipe mRecipe;
     private Button mButton;
     private String url = "http://www.google.com";
     private User user;
+    private ProgressDialog pd;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -40,16 +38,19 @@ public class MainActivity extends AppCompatActivity {
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
+                    progressDialog();
                     state = 0;
                     Fragment recipeFragment = new RecipeFragment();
                     replaceFragment(recipeFragment);
                     return true;
                 case R.id.navigation_fav:
+                    progressDialog();
                     state = 1;
                     Fragment favFragment = new FavFragment();
                     replaceFragment(favFragment);
                     return true;
                 case R.id.navigation_user:
+                    progressDialog();
                     state = 0;
                     Fragment userFragment = new UserFragment();
                     replaceFragment(userFragment);
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pd = new ProgressDialog(this);
+        progressDialog();
         User nUser = (User) getIntent().getSerializableExtra("user");
         user = nUser;
         loadData();
@@ -110,24 +113,12 @@ public class MainActivity extends AppCompatActivity {
         replaceFragment(destFragment);
     }
 
-    public int getState(){
-        return state;
-    }
-
-    public int getLastItem(){
-        return lastItem;
-    }
-
-    public void setLastItem(int item){
-        lastItem = item;
-    }
-
     public Recipe getRecipeItem() {
         return mRecipe;
     }
 
     public void setRecipeItem(Recipe mRecipe) {
-        this.mRecipe = mRecipe;
+        MainActivity.mRecipe = mRecipe;
         url = mRecipe.imageUrl;
     }
 
@@ -164,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } catch (FileNotFoundException e) {
-                String a = e.toString();
                 user = null;
             }
     }
@@ -182,6 +172,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }catch(FileNotFoundException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void progressDialog(){
+        if(pd.isShowing()){
+            pd.dismiss();
+        } else {
+            pd.show();
         }
     }
 

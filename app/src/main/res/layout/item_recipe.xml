@@ -18,7 +18,8 @@
     <TextView
         android:id="@+id/itemRecipeText"
         android:layout_width="128dp"
-        android:layout_height="wrap_content"
+        android:layout_height="76dp"
+        android:textColor="@android:color/black"
         android:textSize="20sp" />
 
 </LinearLayout>
