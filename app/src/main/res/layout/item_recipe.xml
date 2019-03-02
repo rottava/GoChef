@@ -11,7 +11,7 @@
         android:id="@+id/itemRecipeImage"
         android:layout_width="128dp"
         android:layout_height="128dp"
-        android:background="@android:color/darker_gray"
+        android:background="@drawable/ic_round"
         android:contentDescription="@string/main_image_description"
         app:srcCompat="@android:drawable/ic_menu_report_image" />
 

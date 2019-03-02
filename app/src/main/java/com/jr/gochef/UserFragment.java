@@ -29,6 +29,7 @@ public class UserFragment extends Fragment {
 
     private ImageView userPhoto;
     private TextView userName;
+    private TextView userEmail;
     private Button mButton;
     private User user;
 
@@ -70,6 +71,8 @@ public class UserFragment extends Fragment {
         }
         userName = mView.findViewById(R.id.userNameView);
         userName.setText(user.getName());
+        userEmail = mView.findViewById(R.id.userEmail);
+        userEmail.setText(user.getEmail());
         mButton = mView.findViewById(R.id.userButtonView);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override

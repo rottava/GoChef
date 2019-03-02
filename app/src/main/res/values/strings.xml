@@ -30,6 +30,7 @@
     <string name="exp_url">Acesse o Site</string>
     <string name="user_photo">Foto de usuario</string>
     <string name="user_name">Nome</string>
+    <string name="user_email">Email</string>
     <string name="user_logout">Sair</string>
     <string name="user_cred">Feito por Junior Rottava.\nMe contrata pf</string>
     <string name="search_text">Busca!</string>

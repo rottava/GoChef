@@ -69,8 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                                     try{
                                         user.setName(me.getString("name"));
                                         user.setEmail(me.getString("email"));
-                                        String txt = "F" + me.getString("id");
-                                        user.setId(txt);
+                                        user.setId(me.getString("id"));
                                         try{
                                             URL url = new URL("https://graph.facebook.com/" + me.getString("id") + "/picture?type=large");
                                             user.setImage(url.toString());
@@ -190,8 +189,7 @@ public class LoginActivity extends AppCompatActivity {
         user = new User();
         user.setName(googleUser.getDisplayName());
         user.setEmail(googleUser.getEmail());
-        String txt = "G" + googleUser.getId();
-        user.setId(txt);
+        user.setId(googleUser.getId());
         user.setImage(googleUser.getPhotoUrl().toString());
         user.setFavorites(new ArrayList<Recipe>());
         user.setType(false);

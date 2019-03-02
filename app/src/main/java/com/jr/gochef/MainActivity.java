@@ -63,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Log.d(TAG, "ID: " + getIntent().getStringExtra("datalog"));
         User nUser = (User) getIntent().getSerializableExtra("user");
         user = nUser;
         loadData();
@@ -72,15 +70,6 @@ public class MainActivity extends AppCompatActivity {
             user = nUser;
             saveData();
         }
-        /*/
-        File file = new File(user.getId());
-            if(file.exists()) {
-                loadData();
-            }
-            else {
-                saveData();
-            }
-            /*/
         BottomNavigationView navigation = findViewById(R.id.navigation);
         mButton = findViewById(R.id.nav_button);
         mButton.setVisibility(View.GONE);
@@ -90,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
-                //i.setData(Uri.parse(mRecipe.getImageUrl()));
                 startActivity(i);
             }
         });
@@ -158,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loadData(){
             try {
-                FileInputStream fis = this.openFileInput(user.getId());
+                FileInputStream fis = this.openFileInput(user.getEmail());
                 try {
                     ObjectInputStream is = new ObjectInputStream(fis);
                     try {
@@ -166,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
                         is.close();
                         fis.close();
                     } catch (ClassNotFoundException e) {
+
+
+
+
                         e.printStackTrace();
                     }
                 } catch (IOException e) {
@@ -179,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void saveData(){
         try{
-            FileOutputStream fos = this.openFileOutput(user.getId(), Context.MODE_PRIVATE);
+            FileOutputStream fos = this.openFileOutput(user.getEmail(), Context.MODE_PRIVATE);
             try{
                 ObjectOutputStream os = new ObjectOutputStream(fos);
                 os.writeObject(user);
