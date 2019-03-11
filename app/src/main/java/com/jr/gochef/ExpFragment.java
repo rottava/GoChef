@@ -123,7 +123,7 @@ public class ExpFragment extends Fragment {
         expIngredients.setText(text.toString());
         text = new StringBuilder("\n");
         int n=1;
-        for(String elemento: mRecipe.getIngredients()
+        for(String elemento: mRecipe.getSteps()
         ){
             text.append(n).append(") ").append(elemento).append("\n");
             n++;

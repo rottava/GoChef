@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -22,12 +25,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import io.fabric.sdk.android.Fabric;
+
 public class MainActivity extends AppCompatActivity {
 
     private static int state = 0;
     private static Recipe mRecipe;
     private Button mButton;
-    private String url = "http://www.google.com";
     private User user;
     private ProgressDialog pd;
 
@@ -64,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Fabric.with(this, new Crashlytics());
         pd = new ProgressDialog(this);
+        //pd.setTitle(R.string.pd_loading);
         progressDialog();
         User nUser = (User) getIntent().getSerializableExtra("user");
         user = nUser;
@@ -81,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
+                i.setData(Uri.parse(mRecipe.getImageUrl()));
                 startActivity(i);
             }
         });
@@ -119,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void setRecipeItem(Recipe mRecipe) {
         MainActivity.mRecipe = mRecipe;
-        url = mRecipe.imageUrl;
     }
 
     public User getUser(){
@@ -180,6 +185,14 @@ public class MainActivity extends AppCompatActivity {
             pd.dismiss();
         } else {
             pd.show();
+            Runnable progressRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    pd.dismiss();
+                }
+            };
+            Handler timeout = new Handler();
+            timeout.postDelayed(progressRunnable, 3000);
         }
     }
 

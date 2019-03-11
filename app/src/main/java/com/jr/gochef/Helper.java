@@ -5,15 +5,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+
+import static java.security.AccessController.getContext;
 
 class Helper {
 
     static Bitmap downloadDataFromUrl(String myurl) throws IOException {
         InputStream is = null;
-        Bitmap bm;
+        Bitmap bm = null;
         try {
             URL url = new URL(myurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -28,11 +32,16 @@ class Helper {
             bm = BitmapFactory.decodeStream(bis);
             bis.close();
             return bm;
-        } finally {
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             if (is != null) {
                 is.close();
             }
         }
+        return bm;
     }
 
 }

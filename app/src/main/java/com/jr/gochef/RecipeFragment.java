@@ -98,10 +98,11 @@ public class RecipeFragment extends Fragment{
 
         if(recipes == null || recipes.size() == 0){
             fillRecipesTest();
-            topName.setText(recipes.get(0).getRecipeName());
-            topType.setText(recipes.get(0).getAttributes());
-            ((MainActivity) Objects.requireNonNull(getActivity())).setRecipeItem(recipes.get(0));
+            topRecipe = recipes.get(0);
             recipes.remove(recipes.get(0));
+            ((MainActivity) Objects.requireNonNull(getActivity())).setRecipeItem(topRecipe);
+            topName.setText(topRecipe.getRecipeName());
+            topType.setText(topRecipe.getAttributes());
         }
 
         return mView;
@@ -142,36 +143,12 @@ public class RecipeFragment extends Fragment{
         recipe.setImageUrl(Integer.toString(Color.BLUE));
         recipe.setRecipeName("Boiled Water");
         recipe.setAttributes("Drink");
+        recipe.setImageUrl("www.google.com.br");
         ArrayList<String> ingredients = new ArrayList<>();
         ingredients.add("Water");
         recipe.setIngredients(ingredients);
         ArrayList<String> steps = new ArrayList<>();
         steps.add("Boil the water");
-        recipe.setSteps(steps);
-        recipes.add(recipe);
-        recipe = new Recipe();
-        recipe.setImageUrl(Integer.toString(Color.YELLOW));
-        recipe.setRecipeName("Awesome Barbecue");
-        recipe.setAttributes("Dinner");
-        recipe.setIngredients(ingredients);
-        recipe.setSteps(steps);
-        recipes.add(recipe);
-        recipe = new Recipe();
-        recipe.setImageUrl(Integer.toString(Color.MAGENTA));
-        recipe.setRecipeName("Dry Camel and gin");
-        recipe.setIngredients(ingredients);
-        recipe.setSteps(steps);
-        recipes.add(recipe);
-        recipe = new Recipe();
-        recipe.setImageUrl(Integer.toString(Color.RED));
-        recipe.setRecipeName("German Black Sheep n®12");
-        recipe.setIngredients(ingredients);
-        recipe.setSteps(steps);
-        recipes.add(recipe);
-        recipe = new Recipe();
-        recipe.setImageUrl(Integer.toString(Color.BLACK));
-        recipe.setRecipeName("Roasted Goat w/ Honey n' pepper");
-        recipe.setIngredients(ingredients);
         recipe.setSteps(steps);
         recipes.add(recipe);
     }//

@@ -69,6 +69,10 @@ public class Recipe implements Serializable {
         this.id = id;
     }
 
+    List<String> getSteps(){
+        return steps;
+    }
+
     void setSteps(List<String> steps){
         this.steps = steps;
     }
