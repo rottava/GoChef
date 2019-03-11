@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "173691865836",
+    "firebase_url": "https://gochefbrave.firebaseio.com",
+    "project_id": "gochefbrave",
+    "storage_bucket": "gochefbrave.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173691865836:android:724bbc755c024584",
+        "android_client_info": {
+          "package_name": "com.jr.gochef"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "173691865836-8ph29736gs2ds9na5mmdtee1q2ic9rl3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jr.gochef",
+            "certificate_hash": "8f4f17d3a7a353e2076536becb2c69ad9a426f04"
+          }
+        },
+        {
+          "client_id": "173691865836-72js0nkthb7jli8j1pislegk004l51k6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd1efjWrgQezOJvyfbBDf2zN-KEwOxkHs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "173691865836-72js0nkthb7jli8j1pislegk004l51k6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
