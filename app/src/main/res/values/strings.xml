@@ -19,6 +19,7 @@
     <string name="nav_home">RECEITAS</string>
     <string name="nav_fav">FAVORITOS</string>
     <string name="nav_user">PERFIL</string>
+    <string name="fav_text">Nenhum favorito salvo!\nExperimente salvar uma receita clicando no ♥</string>
     <string name="exp_ingredients">Ingredientes</string>
     <string name="exp_steps">Modo de preparo</string>
     <string name="exp_more">Mais receitas como esta&#8230;</string>
@@ -34,7 +35,5 @@
     <string name="user_logout">Sair</string>
     <string name="user_cred">Feito por Junior Rottava.\nMe contrata pf</string>
     <string name="search_text">Busca!</string>
-
-
 
 </resources>

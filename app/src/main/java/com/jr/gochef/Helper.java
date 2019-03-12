@@ -13,7 +13,7 @@ class Helper {
 
     static Bitmap downloadDataFromUrl(String myurl) throws IOException {
         InputStream is = null;
-        Bitmap bm;
+        Bitmap bm = null;
         try {
             URL url = new URL(myurl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -28,11 +28,16 @@ class Helper {
             bm = BitmapFactory.decodeStream(bis);
             bis.close();
             return bm;
-        } finally {
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        finally {
             if (is != null) {
                 is.close();
             }
         }
+        return bm;
     }
 
 }

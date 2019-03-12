@@ -28,7 +28,12 @@ public class Recipe implements Serializable {
         this.source = source;
         this.id = id;
         this.index = "not_specified";
-        this.steps.add("not_specified");
+        this.steps.add("Yumlly");
+        this.steps.add("doesnt");
+        this.steps.add("support");
+        this.steps.add("this");
+        this.steps.add("feature");
+        this.steps.add("yet");
     }
 
     String getRecipeName() {
@@ -67,6 +72,10 @@ public class Recipe implements Serializable {
 
     public void setId(String id){
         this.id = id;
+    }
+
+    List<String> getSteps(){
+        return steps;
     }
 
     void setSteps(List<String> steps){

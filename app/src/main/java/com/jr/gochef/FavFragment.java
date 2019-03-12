@@ -31,6 +31,8 @@ public class FavFragment extends Fragment {
         List<Recipe> recipes = user.getFavorites();
         if(user.getFavorites().size() == 0){
             ((MainActivity) Objects.requireNonNull(getContext())).progressDialog();
+        } else {
+            mView.findViewById(R.id.noFav).setVisibility(View.GONE);
         }
         RecyclerView mRecyclerView = mView.findViewById(R.id.listaReceita);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getContext(), 2);

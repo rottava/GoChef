@@ -108,6 +108,7 @@ public class LoginActivity extends AppCompatActivity {
         googleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
+    /*/
     @Override
     protected void onResume() {
         super.onResume();
@@ -129,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+    /*/
 
     private void signIn() {
         Intent signInIntent = googleSignInClient.getSignInIntent();

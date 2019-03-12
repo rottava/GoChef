@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private static int state = 0;
     private static Recipe mRecipe;
     private Button mButton;
-    private String url = "http://www.google.com";
     private User user;
     private ProgressDialog pd;
 
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(url));
+                i.setData(Uri.parse(mRecipe.getImageUrl()));
                 startActivity(i);
             }
         });
@@ -119,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void setRecipeItem(Recipe mRecipe) {
         MainActivity.mRecipe = mRecipe;
-        url = mRecipe.imageUrl;
     }
 
     public User getUser(){
@@ -180,6 +179,14 @@ public class MainActivity extends AppCompatActivity {
             pd.dismiss();
         } else {
             pd.show();
+            Runnable progressRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    pd.dismiss();
+                }
+            };
+            Handler timeout = new Handler();
+            timeout.postDelayed(progressRunnable, 10000);
         }
     }
 
